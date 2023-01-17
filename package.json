@@ -1,0 +1,24 @@
+{
+  "name": "opt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "opt"
+  ],
+  "author": "d4rk444",
+  "dependencies": {
+    "axios": "^1.2.1",
+    "chalk": "^5.2.0",
+    "console-stamp": "^3.1.0",
+    "crypto-js": "^4.1.1",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
+    "fs": "^0.0.1-security",
+    "graphql-request": "^5.1.0",
+    "mathjs": "^11.5.0",
+    "readline-sync": "^1.4.10",
+    "web3": "^1.8.1"
+  }
+}
