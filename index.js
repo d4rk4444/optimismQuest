@@ -160,7 +160,7 @@ if (status == 'Pool') {
     }
     await timeout(randomTimeout);
     //EXCHANGE USDC -> WETH
-    console.log(chalk.yellow('EXCHANGE'));
+    console.log('Exchange');
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
         console.log('Exchange USDC -> WETH');
@@ -413,10 +413,10 @@ if (status == 'Pool') {
                         res.prepareParticipate.spaceStation).then(async(res1) => {
                         await sendOptTx(chainRpc.Optimism, 150000, chainContract.Optimism.Galaxy, null, res1, wallet[i]);
                     });
+                    await timeout(generateRandomAmount(14000, 18000, 0));
                 } else if (!res.prepareParticipate.allow) {
                     console.log(`${campaign[s].name} Quest not ready, go to next NFT`);
                 }
-                await timeout(generateRandomAmount(6000, 8000, 0));
             });
         }
     }
@@ -450,8 +450,8 @@ if (status == 'Pool') {
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])} ${subWallet[i]}`);
         await getAmountToken(chainRpc.Optimism, chainContract.Optimism.USDC, privateToAddress(wallet[i])).then(async(res) => {
-            const amount = toWei(`${generateRandomAmount(10, 15, 4)}`, 'mwei');
-            res = res - amount;
+            //const amount = toWei(`${generateRandomAmount(10, 15, 4)}`, 'mwei');
+            res = res;
             await dataSendToken(chainRpc.Optimism, chainContract.Optimism.USDC, subWallet[i], res).then(async(res) => {
                 await sendOptTx(chainRpc.Optimism, 200000, chainContract.Optimism.USDC, null, res, wallet[i]);
             });
