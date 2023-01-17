@@ -66,8 +66,8 @@ const campaign = [
 //WETH milliether
 
 const wallet = parseFile('private.txt');
-const randomTimeout = generateRandomAmount(4000, 6200, 0);
-const randomTimeoutFor = generateRandomAmount(2300, 3200, 0);
+const randomTimeout = generateRandomAmount(1200, 2400, 0);
+const randomTimeoutFor = generateRandomAmount(700, 1400, 0);
 let status;
 
 status = readline.question(chalk.cyan('Type "Start" for 1 Stage | Type "Start2" for 2 Stage | Type "Claim" for 3 Stage | Type "freeClaim" for FREE NFT: '));
@@ -94,7 +94,7 @@ if (status == 'Pool') {
 } else if (status == 'Start') {
     //ARBITRUM SWAP
     console.log(chalk.yellow('ARBITRUM SWAP ETH TO USDC'));
-    const nativeForDst = generateRandomAmount(0.0048, 0.0049, 5);
+    const nativeForDst = generateRandomAmount(0.0043, 0.0044, 5);
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
         await getETHAmount(chainRpc.Arbitrum, privateToAddress(wallet[i])).then(async function(res) {
@@ -358,7 +358,7 @@ if (status == 'Pool') {
         });
         await timeout(randomTimeoutFor);
     }
-    await timeout(generateRandomAmount(14000, 17000, 0));
+    await timeout(generateRandomAmount(21000, 24000, 0));
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
         console.log('Сreate Close Position');
