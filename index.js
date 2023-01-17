@@ -129,6 +129,7 @@ if (status == 'Pool') {
     }
     await timeout(randomTimeout);
     //BRIDGE
+    console.log(chalk.yellow('Birdge USDC Stargate'));
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
         const feeBridge = await getFeeBridgeStargate(chainRpc.Arbitrum, 111, chainContract.Arbitrum.StargateRouter, 205000, toWei(`${nativeForDst}`, 'ether'), wallet[i]);
@@ -140,6 +141,7 @@ if (status == 'Pool') {
     console.log(chalk.yellow('Stage 1 END'));
     console.log('-'.repeat(40));
 } else if (status == 'Start2') {
+    console.log(chalk.yellow('Exchange Quest'));
     //APPROVE USDC FOR UNISWAP
     console.log('Approve USDC [UniswapV3]');
     for (let i = 0; i < wallet.length; i++) {
@@ -434,18 +436,26 @@ if (status == 'Pool') {
     console.log(chalk.yellow('Claim Free NFT'));
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
-        await timeout(randomTimeoutFor);
         const type = generateRandomAmount(1, 4, 0);
         await dataClaimFreeNFT(chainRpc.Optimism, type).then(async(res) => {
             await sendOptTx(chainRpc.Optimism, 200000, chainContract.Optimism.FreeNFTOpt, null, res, wallet[i]);
         });
+        await timeout(randomTimeoutFor);
     }
     console.log(chalk.yellow('Stage Claim END'));
     console.log('-'.repeat(40));
 } else if (status == 'OKX') {
     console.log(chalk.yellow('SEND ALL USDC TO SUB WALLET OKX'));
+    const subWallet = parseFile('subWallet.txt');
     for (let i = 0; i < wallet.length; i++) {
-        console.log(`${i+1} ${privateToAddress(wallet[i])}`);
-        await dataSendToken(chainRpc.Optimism, chainContract.Optimism.USDC);
+        console.log(`${i+1} ${privateToAddress(wallet[i])} ${subWallet[i]}`);
+        await getAmountToken(chainRpc.Optimism, chainContract.Optimism.USDC, privateToAddress(wallet[i])).then(async(res) => {
+            const amount = toWei(`${generateRandomAmount(10, 15, 4)}`, 'mwei');
+            res = res - amount;
+            await dataSendToken(chainRpc.Optimism, chainContract.Optimism.USDC, subWallet[i], res).then(async(res) => {
+                await sendOptTx(chainRpc.Optimism, 200000, chainContract.Optimism.USDC, null, res, wallet[i]);
+            });
+            await timeout(randomTimeoutFor);
+        });
     }
 }
