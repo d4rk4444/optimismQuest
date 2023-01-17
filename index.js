@@ -294,7 +294,7 @@ if (status == 'Pool') {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
         console.log('Open position');
         await getAccountValue(chainRpc.Optimism, privateToAddress(wallet[i])).then(async(res) => {
-            await dataOpenPositionPerpetual(chainRpc.Optimism, res).then(async(res1) => {
+            await dataOpenPositionPerpetual(chainRpc.Optimism, parseInt(res)).then(async(res1) => {
                 await sendOptTx(chainRpc.Optimism, 900000, chainContract.Optimism.PerputalMargin, null, res1, wallet[i]);
             });
         });
@@ -353,7 +353,7 @@ if (status == 'Pool') {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
         console.log('Сreate Open Position');
         const amountMargin = multiply(100000000, generateRandomAmount(31, 63, 5));
-        await dataCreateOpenPosition(chainRpc.Optimism, amountMargin, true).then(async(res) => {
+        await dataCreateOpenPosition(chainRpc.Optimism, parseInt(amountMargin), true).then(async(res) => {
             await sendOptTx(chainRpc.Optimism, 450000, chainContract.Optimism.PikaManager, toWei('0.00025', 'ether'), res, wallet[i]);
         });
         await timeout(randomTimeoutFor);
@@ -450,12 +450,44 @@ if (status == 'Pool') {
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])} ${subWallet[i]}`);
         await getAmountToken(chainRpc.Optimism, chainContract.Optimism.USDC, privateToAddress(wallet[i])).then(async(res) => {
-            //const amount = toWei(`${generateRandomAmount(10, 15, 4)}`, 'mwei');
-            res = res;
-            await dataSendToken(chainRpc.Optimism, chainContract.Optimism.USDC, subWallet[i], res).then(async(res) => {
-                await sendOptTx(chainRpc.Optimism, 200000, chainContract.Optimism.USDC, null, res, wallet[i]);
-            });
-            await timeout(randomTimeoutFor);
+            if (res < toWei('16', 'mwei')) {
+                console.log(`Balance < 16 USDC`)
+            } else {
+                const amount = toWei(`${generateRandomAmount(10, 15, 4)}`, 'mwei');
+                res = res - amount;
+                await dataSendToken(chainRpc.Optimism, chainContract.Optimism.USDC, subWallet[i], res).then(async(res) => {
+                    await sendOptTx(chainRpc.Optimism, 200000, chainContract.Optimism.USDC, null, res, wallet[i]);
+                });
+                await timeout(randomTimeoutFor);
+            }
         });
     }
+} else if (status == 'Pika') {
+    for (let i = 0; i < wallet.length; i++) {
+        console.log(`${i+1} ${privateToAddress(wallet[i])}`);
+        console.log('Сreate Close Position');
+        await getPosition(chainRpc.Optimism, privateToAddress(wallet[i]), true).then(async(res) => {
+            await dataCreateClosePosition(chainRpc.Optimism, res, true).then(async(res1) => {
+                await sendOptTx(chainRpc.Optimism, 350000, chainContract.Optimism.PikaManager, toWei('0.00025', 'ether'), res1, wallet[i]);
+            });
+        });
+        await timeout(randomTimeoutFor);
+    }
+} else if (status == 'Balance') {
+    console.log(chalk.cyan('Start Check Balance'));
+    for (let i = 0; i < wallet.length; i++) {
+        console.log(`Wallet ${i+1}  ${privateToAddress(wallet[i])}`);
+        await getETHAmount(chainRpc.Arbitrum, privateToAddress(wallet[i])).then(function (res) {
+            console.log(chalk.green(`Arbitrum: ${fromWei(res, 'ether')}`));
+        });
+        await getETHAmount(chainRpc.Optimism, privateToAddress(wallet[i])).then(function (res) {
+            console.log(chalk.green(`Optimism: ${fromWei(res, 'ether')}`));
+        });
+        await getAmountToken(chainRpc.Optimism, chainContract.Optimism.USDC, privateToAddress(wallet[i])).then(function(res) {
+            console.log(chalk.green(`Optimism USDC: ${fromWei(`${res}`, 'mwei')}`));
+        });
+        await timeout(1000);
+        console.log('-'.repeat(20));
+    }
+    console.log('-'.repeat(40));
 }
