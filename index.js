@@ -70,7 +70,7 @@ const randomTimeout = generateRandomAmount(4000, 6200, 0);
 const randomTimeoutFor = generateRandomAmount(2300, 3200, 0);
 let status;
 
-status = readline.question(chalk.cyan('Type "Start" for 1 Stage | Type "Start2" for 2 Stage | Type "Claim" for 3 Stage: '));
+status = readline.question(chalk.cyan('Type "Start" for 1 Stage | Type "Start2" for 2 Stage | Type "Claim" for 3 Stage | Type "freeClaim" for FREE NFT: '));
 if (status == 'Pool') {
     /*//DEPOSIT POOL
     console.log('APPROVE')
@@ -429,13 +429,14 @@ if (status == 'Pool') {
             }
         });
         await timeout(randomTimeoutFor);
-    }//dataClaimFreeNFT
+    }
+} else if (status == 'freeClaim') {
     console.log(chalk.yellow('Claim Free NFT'));
     for (let i = 0; i < wallet.length; i++) {
         console.log(`${i+1} ${privateToAddress(wallet[i])}`);
         await timeout(randomTimeoutFor);
         const type = generateRandomAmount(1, 4, 0);
-        await dataClaimFreeNFT(chainRpc, type).then(async(res) => {
+        await dataClaimFreeNFT(chainRpc.Optimism, type).then(async(res) => {
             await sendOptTx(chainRpc.Optimism, 200000, chainContract.Optimism.FreeNFTOpt, null, res, wallet[i]);
         });
     }
